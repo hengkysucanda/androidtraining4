@@ -1,32 +1,35 @@
 package com.hanselandpetal.catalog;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.Activity;
+import android.app.ListActivity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.contoh.adapter.FlowerAdapter;
 import com.contoh.model.Product;
 import com.contoh.parsers.ProductJSONPars;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ListActivity {
 
-	TextView output;
 	ProgressBar pb;
 	List<MyTask> tasks;
 	List <Product> products;
+	
+	public static final String PHOTO_BASE_URL = "http://services.hanselandpetal.com/photos/";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +37,6 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		
 //		Initialize the TextView for vertical scrolling
-		output = (TextView) findViewById(R.id.textView);
-		output.setMovementMethod(new ScrollingMovementMethod());
 		
 		pb=(ProgressBar) findViewById(R.id.progressBar1);
 		pb.setVisibility(View.INVISIBLE);
@@ -68,10 +69,8 @@ public class MainActivity extends Activity {
 	}
 
 	protected void updateDisplay() {
-		for(Product prd : products){
-			output.append(prd.getName()+"\n");
-			
-		}
+		FlowerAdapter adapter = new FlowerAdapter(this, R.layout.item_layout, products);
+		setListAdapter(adapter);
 	}
 	protected boolean isOnline (){
 		ConnectivityManager cm  = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -97,7 +96,10 @@ public class MainActivity extends Activity {
 		protected String doInBackground(String... params) {
 		
 			String data = HttpManager.getData(params[0],"feeduser","feedpassword");
-			Log.e("CALVIN",data+ " " + params[0]);
+			products = ProductJSONPars.parseProduct(data);
+			
+			
+			
 			return data;
 			//return "Task complete";
 		}
@@ -113,9 +115,6 @@ public class MainActivity extends Activity {
 				Toast.makeText(MainActivity.this, "Can't connect to web service", Toast.LENGTH_LONG).show();
 				return;
 			}
-			
-			products = ProductJSONPars.parseProduct(result);
-			
 			
 			updateDisplay();
 			

@@ -1,5 +1,7 @@
 package com.contoh.model;
 
+import android.graphics.Bitmap;
+
 public class Product {
 	private int productId;
 	private String category;
@@ -7,6 +9,8 @@ public class Product {
 	private String instructions;
 	private double price;
 	private String photo;
+	private Bitmap bitmap;
+	
 	public int getProductId() {
 		return productId;
 	}
@@ -42,6 +46,12 @@ public class Product {
 	}
 	public void setPhoto(String photo) {
 		this.photo = photo;
+	}
+	public Bitmap getBitmap() {
+		return bitmap;
+	}
+	public void setBitmap(Bitmap bitmap) {
+		this.bitmap = bitmap;
 	}
 
 }
